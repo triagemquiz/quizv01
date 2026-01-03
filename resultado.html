@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><title>Resultado</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head><body>
+<div class="container card" id="blocked">
+<h2>🔒 Resultado bloqueado</h2>
+<p>Para acessar o relatório completo, finalize o pagamento.</p>
+<a class="btn primary" href="pagamento.html">Ir para pagamento</a>
+</div>
+
+<div class="container card hidden" id="content">
+<h2>Resultado da Triagem</h2>
+<p id="classificacao" class="lead"></p>
+<canvas id="grafico" width="400" height="400"></canvas>
+<p class="legal">Indicativo informativo. Não substitui consulta.</p>
+</div>
+
+<script>
+const gate = sessionStorage.getItem('paid_gate');
+if(gate === 'true'){
+  document.getElementById('blocked').classList.add('hidden');
+  document.getElementById('content').classList.remove('hidden');
+  const score = parseInt(localStorage.getItem('score')||0);
+  let nivel='', cor='';
+  if(score<40){nivel='Indicativo Leve'; cor='rgba(46,204,113,.6)'}
+  else if(score<80){nivel='Indicativo Moderado'; cor='rgba(241,196,15,.6)'}
+  else{nivel='Indicativo Elevado'; cor='rgba(231,76,60,.6)'}
+  document.getElementById('classificacao').innerText=nivel;
+  new Chart(document.getElementById('grafico'),{
+    type:'radar',
+    data:{labels:['Atenção','Impulsividade','Interação','Rotina','Emoções'],
+    datasets:[{label:'Perfil',data:[score*.2,score*.25,score*.15,score*.2,score*.2],
+    backgroundColor:cor,borderColor:cor.replace('.6','1'),borderWidth:2}]},
+    options:{responsive:true,scales:{r:{beginAtZero:true,max:100}}}
+  });
+}
+</script>
+</body></html>
